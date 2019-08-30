@@ -1,0 +1,32 @@
+$color: #222;
+$s-color: #fff;
+
+.wrapper{
+    display: flex;
+    align-items: center;
+    min-height: 3cm;
+    padding: 0px;
+    background: $color;
+    color: $s-color;
+}
+
+.wrapper .brand {
+    flex: 2;
+    height: 100%;
+    background: scale-color($color, $lightness: -20%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 20px;
+
+    & img {
+        height: 100%;
+        max-width: 120px;
+        height: auto;
+    }
+}
+
+.wrapper .navbar {
+    flex: 10;
+}
