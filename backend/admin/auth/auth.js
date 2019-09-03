@@ -7,8 +7,17 @@ const jwt = require('jsonwebtoken');
 const {secret} = require('../../config');
 
 router.get('/', async (req, res) => {
-
+    console.log(`Querying...`)
     const users = await User.find({}).select('-password');
+    res.json(users);
+});
+
+router.post('/', async (req, res) => {
+    let limit = 10, offset = 0;
+    if(Number(req.body.limit) && Number(req.body.offset)){
+        limit = req.body.limit; offset = req.body.offset;
+    }
+    const users = await User.find({}).skip(offset).limit(limit).select('-password');
     res.json(users);
 });
 
@@ -62,6 +71,33 @@ router.post('/validateToken', async(req, res) => {
         }
     }
 
+})
+
+
+router.post('/remove', async (req, res) => {
+    if(!req.body.id){
+        return false;
+    }
+
+    const result = await User.deleteOne({_id: req.body.id});
+    
+    if(result.deletedCount >= 1){
+        res.json({status: true, message: "Usuário removido com sucesso!"});
+    } else {
+        res.json({status: false, message: "Algo deu errado por aqui!"});
+    }
+    
+})
+
+router.post('/user/:id', async (req, res) => {
+    const {id} = req.params;
+    if(!id) {
+        res.json({status: false, message: "ID Inválido"});
+    }
+
+    const user = await User.find({_id: id}).select(`-password`).limit(1);
+
+    res.json(user);
 })
 
 module.exports = router;

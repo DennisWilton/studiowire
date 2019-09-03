@@ -6,7 +6,7 @@ const cors = require('cors');
 
 const auth = require('./auth/auth');
 
-router.use(cors());
+
 
 router.get('/', async (req, res) => {
 	res.json({

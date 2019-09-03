@@ -1,4 +1,4 @@
-import React, { Component, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import {
   Badge,
@@ -20,8 +20,10 @@ import {
   Row,
   Table,
 } from 'reactstrap';
+
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
-import { getStyle, hexToRgba } from '@coreui/coreui/dist/js/coreui-utilities'
+import { getStyle, hexToRgba } from '@coreui/coreui/dist/js/coreui-utilities';
+import * as users from '../../models/users';
 
 const Widget03 = lazy(() => import('../../views/Widgets/Widget03'));
 
@@ -452,34 +454,32 @@ const mainChartOpts = {
   },
 };
 
-class Dashboard extends Component {
-  constructor(props) {
-    super(props);
-
-    this.toggle = this.toggle.bind(this);
-    this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
-
-    this.state = {
-      dropdownOpen: false,
-      radioSelected: 2,
-    };
+function Dashboard(props) {
+    
+  const [state, setState] = useState({dropdownOpen: false, radioSelected: 2, userCount: 0})
+  
+  const updateUserCount = async () => {
+    const value = await users.count();
+    setState({...state, userCount: value});
   }
 
-  toggle() {
-    this.setState({
-      dropdownOpen: !this.state.dropdownOpen,
+  useEffect(() => {
+    updateUserCount();
+  }, [])
+
+  const toggle = () => {
+    setState({ ...state,
+      dropdownOpen: !state.dropdownOpen,
     });
   }
 
-  onRadioBtnClick(radioSelected) {
-    this.setState({
+  const onRadioBtnClick = (radioSelected) => {
+    setState({...state,
       radioSelected: radioSelected,
     });
   }
 
-  loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
-
-  render() {
+  const loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
     return (
       <div className="animated fadeIn">
@@ -488,7 +488,7 @@ class Dashboard extends Component {
             <Card className="text-white bg-info">
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
-                  <ButtonDropdown id='card1' isOpen={this.state.card1} toggle={() => { this.setState({ card1: !this.state.card1 }); }}>
+                  <ButtonDropdown id='card1' isOpen={state.card1} toggle={() => { setState({ card1: !state.card1 }); }}>
                     <DropdownToggle caret className="p-0" color="transparent">
                       <i className="icon-settings"></i>
                     </DropdownToggle>
@@ -513,7 +513,7 @@ class Dashboard extends Component {
             <Card className="text-white bg-primary">
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
-                  <Dropdown id='card2' isOpen={this.state.card2} toggle={() => { this.setState({ card2: !this.state.card2 }); }}>
+                  <Dropdown id='card2' isOpen={state.card2} toggle={() => { setState({ card2: !state.card2 }); }}>
                     <DropdownToggle className="p-0" color="transparent">
                       <i className="icon-location-pin"></i>
                     </DropdownToggle>
@@ -524,8 +524,8 @@ class Dashboard extends Component {
                     </DropdownMenu>
                   </Dropdown>
                 </ButtonGroup>
-                <div className="text-value">9.823</div>
-                <div>Members online</div>
+                <div className="text-value">{state.userCount}</div>
+                <div>Usuários cadastrados</div>
               </CardBody>
               <div className="chart-wrapper mx-3" style={{ height: '70px' }}>
                 <Line data={cardChartData1} options={cardChartOpts1} height={70} />
@@ -537,7 +537,7 @@ class Dashboard extends Component {
             <Card className="text-white bg-warning">
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
-                  <Dropdown id='card3' isOpen={this.state.card3} toggle={() => { this.setState({ card3: !this.state.card3 }); }}>
+                  <Dropdown id='card3' isOpen={state.card3} toggle={() => { setState({ card3: !state.card3 }); }}>
                     <DropdownToggle caret className="p-0" color="transparent">
                       <i className="icon-settings"></i>
                     </DropdownToggle>
@@ -561,7 +561,7 @@ class Dashboard extends Component {
             <Card className="text-white bg-danger">
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
-                  <ButtonDropdown id='card4' isOpen={this.state.card4} toggle={() => { this.setState({ card4: !this.state.card4 }); }}>
+                  <ButtonDropdown id='card4' isOpen={state.card4} toggle={() => { setState({ card4: !state.card4 }); }}>
                     <DropdownToggle caret className="p-0" color="transparent">
                       <i className="icon-settings"></i>
                     </DropdownToggle>
@@ -594,9 +594,9 @@ class Dashboard extends Component {
                     <Button color="primary" className="float-right"><i className="icon-cloud-download"></i></Button>
                     <ButtonToolbar className="float-right" aria-label="Toolbar with button groups">
                       <ButtonGroup className="mr-3" aria-label="First group">
-                        <Button color="outline-secondary" onClick={() => this.onRadioBtnClick(1)} active={this.state.radioSelected === 1}>Day</Button>
-                        <Button color="outline-secondary" onClick={() => this.onRadioBtnClick(2)} active={this.state.radioSelected === 2}>Month</Button>
-                        <Button color="outline-secondary" onClick={() => this.onRadioBtnClick(3)} active={this.state.radioSelected === 3}>Year</Button>
+                        <Button color="outline-secondary" onClick={() => onRadioBtnClick(1)} active={state.radioSelected === 1}>Day</Button>
+                        <Button color="outline-secondary" onClick={() => onRadioBtnClick(2)} active={state.radioSelected === 2}>Month</Button>
+                        <Button color="outline-secondary" onClick={() => onRadioBtnClick(3)} active={state.radioSelected === 3}>Year</Button>
                       </ButtonGroup>
                     </ButtonToolbar>
                   </Col>
@@ -640,7 +640,7 @@ class Dashboard extends Component {
 
         <Row>
           <Col xs="6" sm="6" lg="3">
-            <Suspense fallback={this.loading()}>
+            <Suspense fallback={loading()}>
               <Widget03 dataBox={() => ({ variant: 'facebook', friends: '89k', feeds: '459' })} >
                 <div className="chart-wrapper">
                   <Line data={makeSocialBoxData(0)} options={socialChartOpts} height={90} />
@@ -650,7 +650,7 @@ class Dashboard extends Component {
           </Col>
 
           <Col xs="6" sm="6" lg="3">
-            <Suspense fallback={this.loading()}>
+            <Suspense fallback={loading()}>
               <Widget03 dataBox={() => ({ variant: 'twitter', followers: '973k', tweets: '1.792' })} >
                 <div className="chart-wrapper">
                   <Line data={makeSocialBoxData(1)} options={socialChartOpts} height={90} />
@@ -660,7 +660,7 @@ class Dashboard extends Component {
           </Col>
 
           <Col xs="6" sm="6" lg="3">
-            <Suspense fallback={this.loading()}>
+            <Suspense fallback={loading()}>
               <Widget03 dataBox={() => ({ variant: 'linkedin', contacts: '500+', feeds: '292' })} >
                 <div className="chart-wrapper">
                   <Line data={makeSocialBoxData(2)} options={socialChartOpts} height={90} />
@@ -670,7 +670,7 @@ class Dashboard extends Component {
           </Col>
 
           <Col xs="6" sm="6" lg="3">
-            <Suspense fallback={this.loading()}>
+            <Suspense fallback={loading()}>
               <Widget03 dataBox={() => ({ variant: 'google-plus', followers: '894', circles: '92' })} >
                 <div className="chart-wrapper">
                   <Line data={makeSocialBoxData(3)} options={socialChartOpts} height={90} />
@@ -1123,7 +1123,6 @@ class Dashboard extends Component {
         </Row>
       </div>
     );
-  }
 }
 
 export default Dashboard;

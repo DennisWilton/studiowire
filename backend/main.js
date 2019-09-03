@@ -1,6 +1,7 @@
 const 	express 				= require('express'),
 		app 					= express(),
 		bodyParser				= require('body-parser'),
+		cors					= require('cors'),
 		{port, welcomeMessage}	= require('./config.js');
 
 
@@ -8,6 +9,13 @@ app.use(bodyParser.urlencoded({
 	extended: true
 }));
 app.use(bodyParser.json());
+app.use(cors());
+app.use('/', (req, res, next) => {
+
+	console.log(`[${req.method}] - Request at ${req.url}`);
+	next();
+	
+})
 		
 let admin = require('./admin/admin');
 
