@@ -8,14 +8,21 @@ const {secret} = require('../config');
 const auth = require('./auth/auth');
 
 const notAuthorized = (req, res) => {
-	res.json({erro: `Você não está autorizado a acessar este conteúdo!`});
+	res.status(500).json({erro: `Você não está autorizado a acessar este conteúdo!`});
 }
 
 /** Middleware de autorização. */
 router.use((req, res, next) => {
-	console.log(`Alguém está acessando uma rota protegida.`);
-	console.log(`[${req.method}] - "${req.url}"`);
+	if(req.url === "/auth/login") {
+		next();
+		return;
+	}
 
+	console.log(`Alguém está acessando uma rota protegida:`);
+	console.log(`[${req.method}] - "${req.url}"`);
+	console.log(`-----------------------------------------------------------------`)
+
+	
 	/* Procura token */
 	const token = req.body.token;
 	if(!token){

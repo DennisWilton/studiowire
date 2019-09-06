@@ -74,7 +74,7 @@ function DefaultHeader(props){
               <DropdownItem><i className="fa fa-file"></i> Projetos<Badge color="primary">42</Badge></DropdownItem>
               <DropdownItem divider />
               <DropdownItem><i className="fa fa-shield"></i> Trancar sessão</DropdownItem>
-              <DropdownItem onClick={e => this.props.onLogout(e)}><i className="fa fa-lock"></i> Sair</DropdownItem>
+              <DropdownItem onClick={e => props.onLogout(e)}><i className="fa fa-lock"></i> Sair</DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
         </Nav>

@@ -1,9 +1,38 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 
-class Login extends Component {
-  render() {
+import {useDispatch, useSelector} from 'react-redux';
+import { Login as loginMtd } from '../../../models/auth';
+
+function Login(props) {
+
+    const initialMessage = `Entre na sua conta`;
+    const [state, setState] = useState({ message: initialMessage, error: false});
+    const auth = useSelector(state => state.auth);
+    const dispatch = useDispatch();
+
+    const login = async () => {
+        const credentials = { email: document.getElementById("input_email"), password: document.getElementById("input_password") };
+        
+        try { 
+         const response = await loginMtd(credentials); 
+         if(!response.status){
+           throw({message: response.message});
+         } else {
+           console.log(response);
+           setState({...state, message: `Bem-vindo, ${response.user.name.split(" ")[0]}!`});
+           dispatch({type: 'LOGIN', profile: response.user, token: response.token});
+           props.history.push('/dashboard');
+         }
+        } 
+        catch (err) {
+          setState({...state, message: err.message, error: true});
+          setTimeout(() => { setState({...state, message: initialMessage, error: false}) }, 2000);
+          dispatch({type: 'LOGOUT'});
+        }
+    }
+
     return (
       <div className="app flex-row align-items-center">
         <Container>
@@ -12,16 +41,16 @@ class Login extends Component {
               <CardGroup>
                 <Card className="p-4">
                   <CardBody>
-                    <Form>
+                    <Form onSubmit={login}>
                       <h1>Login</h1>
-                      <p className="text-muted">Entre na sua conta</p>
+                      <p className={state.error ? `bg-danger text-light p-2` : `text-muted pt-2 pb-2`} >{state.message}</p>
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
                             <i className="icon-user"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="text" placeholder="Nome de usuário" autoComplete="username" />
+                        <Input type="email" id="input_email" placeholder="Email" autoComplete="username" />
                       </InputGroup>
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
@@ -29,11 +58,11 @@ class Login extends Component {
                             <i className="icon-lock"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="password" placeholder="Senha" autoComplete="current-password" />
+                        <Input type="password" id="input_password" placeholder="Senha" autoComplete="current-password" />
                       </InputGroup>
                       <Row>
                         <Col xs="6">
-                          <Button color="primary" className="px-4">Entrar</Button>
+                          <Button color="primary" onClick={ login } className="px-4">Entrar</Button>
                         </Col>
                         <Col xs="6" className="text-right">
                           <Button color="link" className="px-0">Esqueci minha senha</Button>
@@ -59,7 +88,6 @@ class Login extends Component {
         </Container>
       </div>
     );
-  }
 }
 
 export default Login;
