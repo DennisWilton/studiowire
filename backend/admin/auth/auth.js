@@ -27,19 +27,28 @@ router.get('/login', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+  
     // Verifica se o usuário existe!
-    const credentials = { email: req.body.email };
-    const user = await User.findOne(credentials).select('-password');
-
+    const credentials = { email: req.body.email, password: req.body.password };
+    console.log(req.body);
     
-    if(!user){
-        res.json({message: "Não existe usuário cadastro com este e-mail"})
-    }
+    try {
+        const user = await User.findOne({email: credentials.email}).select('');
+        if(!user){
+            throw {message: "Usuário não encontrado."}
+        }
 
-    if(user){
-        const isPasswordCorrect = user.verifyPassword( req.body.password );
-        const token = jwt.sign( {user} , secret );
-        res.json(token);
+        if(!user.verifyPassword(credentials.password)){
+            throw {message: "Senha incorreta."}
+        };
+
+        user.password = undefined;
+        
+        res.json({status: true, user, token: jwt.sign({user}, secret)});
+        
+    } catch (error) {
+        console.log(error);
+        res.json({status: false, message: error.message});
     }
     
 })

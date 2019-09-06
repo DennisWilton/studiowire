@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
 }, {collection: `users`});
 
 userSchema.methods.verifyPassword = function(password){
+    console.log(this);
     if(password === this.password){
         return true;
     } 

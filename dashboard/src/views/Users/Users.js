@@ -4,9 +4,12 @@ import { Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, Pag
 
 import { remove, getAll } from '../../models/users';
 
-export default function Users(){
+import {useSelector} from 'react-redux';
 
+export default function Users(){
   const [userList, setUserlist] = useState({state: true})
+  const token = useSelector(state => state);
+  console.log(token.auth);
 
   const getUsers = async (offset) => {
     const response = await getAll(offset);
@@ -68,7 +71,7 @@ const Tabela = (props) => {
                   </tr>
                   </thead>
                   <tbody>
-                  {users.map(user => (
+                  {users.length > 0 && users.map(user => (
                   <tr>
                     <td><Link to={`users/${user._id}`}>{user.name}</Link></td>
                     <td>{user.email}</td>
@@ -77,6 +80,13 @@ const Tabela = (props) => {
                       <Badge color="danger" style={{cursor: "pointer"}} onClick={async () => { await remove(user._id); props.getUsers(0) }}>Apagar</Badge>
                     </td>
                   </tr>))}
+
+                  {users.length <= 0 && (
+                    <tr>
+                      <td>Nenhum usuário para ser mostrado.</td>
+                    </tr>
+
+                  )}
 
                   </tbody>
                 </Table>

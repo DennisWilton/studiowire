@@ -3,10 +3,11 @@ import axios from 'axios';
 
 const ERR = 'models/user \n>>';
 
-export const getAll = async (offset) => {
+export const getAll = async (offset, token) => {
 
     try {
-        const result = await axios.post(`${API_HOST}/admin/auth`, { limit: 10, offset});
+        console.log(token);
+        const result = await axios.post(`${API_HOST}/admin/auth`, { limit: 10, offset, token});
         return result;
     } catch (err) {
         console.error(`${ERR} Erro ao carregar a lista de usuários.\n\n${err}`)
