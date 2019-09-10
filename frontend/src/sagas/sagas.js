@@ -34,11 +34,11 @@ function separateInGroups(images){
 function* fetchMainData(action){
     try{
         let response = yield call(apiGet, {
-                    url: `https://pixabay.com/api/?key=13306844-850934e1691914d8994e41058&q=${action.theme}&per_page=12`,
+                    url: `https://newsapi.org/v2/top-headlines?country=br&category=technology&apiKey=826541211dde43c0a633a4cca83e01fc`,
         });
 
         let images = [];
-        response.data.hits.map(hit => {
+        response.data.articles.map(hit => {
             images.push(hit)
         })
 

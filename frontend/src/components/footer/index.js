@@ -4,7 +4,7 @@ import {Footer} from './style';
 export default () => {
     return(
         <Footer>
-            <span>Studios Wire &copy; { new Date().getFullYear() } - <a href="http://facebook.com/nwp4d">Denis Wilton</a></span>
+            <span><b>Studios Wire</b> &copy; Todos os direitos reservados</span>
         </Footer>
     )
 }

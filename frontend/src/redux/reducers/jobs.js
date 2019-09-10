@@ -11,7 +11,7 @@ const INITIAL_STATE = {
          case 'JOBS_FETCH_SUCCESS':
              return {...state, loading: false, error: false, data: action.payload.data}
          case 'JOBS_FETCH_ERROR':
-             return {...INITIAL_STATE, error: true}
+             return {...INITIAL_STATE, error: action.payload.message}
          default:
              return state;
      }
